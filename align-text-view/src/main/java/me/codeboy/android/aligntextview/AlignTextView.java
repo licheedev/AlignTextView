@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author YD
  */
-public class AlignTextView extends TextView {
+public class AlignTextView extends android.support.v7.widget.AppCompatTextView {
     private float textHeight; // 单行文字高度
     private float textLineSpaceExtra = 0; // 额外的行间距
     private int width; // textView宽度
@@ -48,7 +48,8 @@ public class AlignTextView extends TextView {
         super(context, attrs);
         setTextIsSelectable(false);
 
-        int[] attributes = new int[]{android.R.attr.lineSpacingExtra, android.R.attr.lineSpacingMultiplier};
+        int[] attributes =
+            new int[] { android.R.attr.lineSpacingExtra, android.R.attr.lineSpacingMultiplier };
         TypedArray arr = context.obtainStyledAttributes(attrs, attributes);
         lineSpacingAdd = arr.getDimensionPixelSize(0, 0);
         lineSpacingMultiplier = arr.getFloat(1, 1.0f);
@@ -73,7 +74,6 @@ public class AlignTextView extends TextView {
         ta.recycle();
     }
 
-
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -93,8 +93,8 @@ public class AlignTextView extends TextView {
             }
 
             //使用替代textview计算原始高度与行数
-            measureTextViewHeight(text, paint.getTextSize(), getMeasuredWidth() -
-                    getPaddingLeft() - getPaddingRight());
+            measureTextViewHeight(text, paint.getTextSize(),
+                getMeasuredWidth() - getPaddingLeft() - getPaddingRight());
 
             //获取行高
             textHeight = 1.0f * originalHeight / originalLineCount;
@@ -102,13 +102,13 @@ public class AlignTextView extends TextView {
             textLineSpaceExtra = textHeight * (lineSpacingMultiplier - 1) + lineSpacingAdd;
 
             //计算实际高度,加上多出的行的高度(一般是减少)
-            int heightGap = (int) ((textLineSpaceExtra + textHeight) * (lines.size() -
-                    originalLineCount));
+            int heightGap =
+                (int) ((textLineSpaceExtra + textHeight) * (lines.size() - originalLineCount));
 
             setPaddingFromMe = true;
             //调整textview的paddingBottom来缩小底部空白
             setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(),
-                    originalPaddingBottom + heightGap);
+                originalPaddingBottom + heightGap);
 
             firstCalc = false;
         }
@@ -117,6 +117,20 @@ public class AlignTextView extends TextView {
     @Override
     protected void onDraw(Canvas canvas) {
         TextPaint paint = getPaint();
+
+        // 调整高度后，firstCalc会为false，如果还是ture，表示没调整过高度
+        if (firstCalc) { // 并不是每次调整，如果没进行过调整，就需要重新准备各行内容
+            String text = getText().toString();
+            lines.clear();
+            tailLines.clear();
+
+            // 文本含有换行符时，分割单独处理
+            String[] items = text.split("\\n");
+            for (String item : items) {
+                calc(paint, item);
+            }
+        }
+
         paint.setColor(getCurrentTextColor());
         paint.drawableState = getDrawableState();
 
@@ -155,8 +169,8 @@ public class AlignTextView extends TextView {
 
             for (int j = 0; j < line.length(); j++) {
                 float drawX = paint.measureText(line.substring(0, j)) + interval * j;
-                canvas.drawText(line.substring(j, j + 1), drawX + drawSpacingX, drawY +
-                        paddingTop + textLineSpaceExtra * i, paint);
+                canvas.drawText(line.substring(j, j + 1), drawX + drawSpacingX,
+                    drawY + paddingTop + textLineSpaceExtra * i, paint);
             }
         }
     }
@@ -184,8 +198,8 @@ public class AlignTextView extends TextView {
         int startPosition = 0; // 起始位置
         float oneChineseWidth = paint.measureText("中");
         int ignoreCalcLength = (int) (width / oneChineseWidth); // 忽略计算的长度
-        StringBuilder sb = new StringBuilder(text.substring(0, Math.min(ignoreCalcLength + 1,
-                text.length())));
+        StringBuilder sb =
+            new StringBuilder(text.substring(0, Math.min(ignoreCalcLength + 1, text.length())));
 
         for (int i = ignoreCalcLength + 1; i < text.length(); i++) {
             if (paint.measureText(text.substring(startPosition, i + 1)) > width) {
@@ -215,7 +229,6 @@ public class AlignTextView extends TextView {
         tailLines.add(lines.size() - 1);
     }
 
-
     @Override
     public void setText(CharSequence text, BufferType type) {
         firstCalc = true;
@@ -231,12 +244,11 @@ public class AlignTextView extends TextView {
         super.setPadding(left, top, right, bottom);
     }
 
-
     /**
      * 获取文本实际所占高度，辅助用于计算行高,行数
      *
-     * @param text        文本
-     * @param textSize    字体大小
+     * @param text 文本
+     * @param textSize 字体大小
      * @param deviceWidth 屏幕宽度
      */
     private void measureTextViewHeight(String text, float textSize, int deviceWidth) {

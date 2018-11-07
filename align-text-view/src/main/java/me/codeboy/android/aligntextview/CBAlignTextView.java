@@ -8,12 +8,9 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.TextView;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
 import me.codeboy.android.aligntextview.util.CBAlignTextViewUtil;
 
 /**
@@ -29,7 +26,7 @@ import me.codeboy.android.aligntextview.util.CBAlignTextViewUtil;
  * </p>
  * Created by yuedong.lyd on 6/28/15.
  */
-public class CBAlignTextView extends TextView {
+public class CBAlignTextView extends android.support.v7.widget.AppCompatTextView {
     private final static String TAG = CBAlignTextView.class.getSimpleName();
     private final static char SPACE = ' '; //空格;
     private List<Integer> addCharPosition = new ArrayList<Integer>();  //增加空格的位置
